@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/CIS111B-Group-Project.iml" filepath="$PROJECT_DIR$/.idea/CIS111B-Group-Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Mood Planner/Mood Planner.iml" filepath="$PROJECT_DIR$/Mood Planner/Mood Planner.iml" />
+    </modules>
+  </component>
+</project>
