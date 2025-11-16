@@ -1,2 +1,5 @@
-public class MoodType {
+public enum MoodType {
+    TIRED,
+    NEUTRAL,
+    ENERGETIC
 }
