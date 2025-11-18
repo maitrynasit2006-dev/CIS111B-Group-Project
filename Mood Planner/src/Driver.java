@@ -1,5 +1,15 @@
+/**
+ * Driver class to demonstrate the functionality of the Task-Mood Planner application.
+ * This class contains the main method to test the task management system.
+ */
 public class Driver {
 
+    /**
+     * The main method that serves as the entry point of the application.
+     * It demonstrates the creation of tasks and basic mood-based task planning.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
 
         System.out.println("Task–Mood Planner Test Run");
