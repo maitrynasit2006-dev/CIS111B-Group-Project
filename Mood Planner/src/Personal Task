@@ -1,3 +1,7 @@
+/**
+ * Represents a personal task created by the user.
+ * Extends the abstract Task class with no extra fields.
+ */
 import java.time.LocalDate;
 
 public class PersonalTask extends Task {
