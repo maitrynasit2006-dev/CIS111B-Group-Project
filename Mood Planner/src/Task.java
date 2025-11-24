@@ -1,3 +1,8 @@
+/**
+ * Abstract base class representing a general task.
+ * Supports encapsulation, validation, inheritance, and polymorphism.
+ * Subclasses (SchoolTask, PersonalTask) extend this class.
+ */
 import java.time.LocalDate;
 
 /**
@@ -91,3 +96,18 @@ public abstract class Task {
     public void setCompleted(boolean completed) {
         isCompleted = completed;
     }
+
+    /**
+     * Returns the type label for the task.
+     * This method must be implemented by all subclasses.
+     *
+     * @return the string representing the task type
+     */
+    public abstract String getTypeLabel();
+
+    @Override
+    public String toString() {
+        return String.format("Task{id=%d, title='%s', description='%s', effortLevel=%s, dueDate=%s, isCompleted=%s}",
+                id, title, description, effortLevel, dueDate, isCompleted);
+    }
+}
