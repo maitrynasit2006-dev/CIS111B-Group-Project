@@ -1,0 +1,19 @@
+import java.time.LocalDate;
+
+public class PersonalTask extends Task {
+
+    public PersonalTask(int id, String title, String description,
+                        LevelMood effortLevel, LocalDate dueDate) {
+        super(id, title, description, effortLevel, dueDate);
+    }
+
+    @Override
+    public String getTypeLabel() {
+        return "Personal";
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [Personal Task]";
+    }
+}
