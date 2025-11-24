@@ -1,0 +1,6 @@
+public class ExternalService {
+
+    public String getMotivationalQuote() {
+        return "You got this! Small steps count.";
+    }
+}
