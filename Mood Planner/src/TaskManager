@@ -1,1 +1,37 @@
+import java.util.ArrayList;
+
+public class TaskManager {
+
+    private ArrayList<Task> tasks = new ArrayList<>();
+    private int nextId = 1;
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public ArrayList<Task> getAllTasks() {
+        return tasks;
+    }
+
+    public ArrayList<Task> suggestTasksByMood(MoodType mood) {
+
+        LevelMood targetEffort;
+
+        switch (mood) {
+            case TIRED -> targetEffort = LevelMood.LOW;
+            case NEUTRAL -> targetEffort = LevelMood.MEDIUM;
+            default -> targetEffort = LevelMood.HIGH;
+        }
+
+        ArrayList<Task> result = new ArrayList<>();
+
+        for (Task task : tasks) {
+            if (task.getEffortLevel() == targetEffort) {
+                result.add(task);
+            }
+        }
+
+        return result;
+    }
+}
 
