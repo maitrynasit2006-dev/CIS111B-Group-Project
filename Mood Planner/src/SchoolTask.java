@@ -1,3 +1,7 @@
+/**
+ * Represents a school-related task.
+ * Extends the abstract Task class and adds a courseName field.
+ */
 import java.time.LocalDate;
 
 public class SchoolTask extends Task {
