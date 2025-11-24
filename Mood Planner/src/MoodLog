@@ -1,3 +1,7 @@
+/**
+ * Stores a single mood entry with a timestamp.
+ * Used by MoodManager to track historical moods.
+ */
 import java.time.LocalDateTime;
 
 public class MoodLog {
