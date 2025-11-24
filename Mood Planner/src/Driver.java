@@ -1,3 +1,8 @@
+/**
+ * Main driver class of the Task–Mood Planner.
+ * Provides menu-driven user interface and handles input.
+ */
+
 import java.util.Scanner;
 import java.time.LocalDate;
 
@@ -8,6 +13,7 @@ public class Driver {
         Scanner sc = new Scanner(System.in);
         TaskManager taskManager = new TaskManager();
         MoodManager moodManager = new MoodManager();
+        ExternalService externalService = new ExternalService(); // NEW
 
         while (true) {
 
@@ -17,14 +23,17 @@ public class Driver {
             System.out.println("3. Show Suggested Tasks");
             System.out.println("4. Show All Tasks");
             System.out.println("5. Show Mood History");
-            System.out.println("6. Exit");
+            System.out.println("6. Save Tasks to File");
+            System.out.println("7. Load Tasks from File");
+            System.out.println("8. Show Motivational Quote (API)");
+            System.out.println("9. Exit");
             System.out.print("Choose option: ");
 
-            // FIX #1 — prevent crashing if user types letters
+            // Prevent crash if user enters letters
             if (!sc.hasNextInt()) {
-                System.out.println(" Invalid input. Please enter a number 1–6.");
-                sc.nextLine(); // clear bad input
-                continue;      // restart loop
+                System.out.println(" Invalid input. Enter a number 1–9.");
+                sc.nextLine();
+                continue;
             }
 
             int choice = sc.nextInt();
@@ -36,11 +45,10 @@ public class Driver {
                     System.out.println("Enter mood (TIRED / NEUTRAL / ENERGETIC):");
                     String moodInput = sc.nextLine().trim().toUpperCase();
 
-                    // FIX #2 — validate mood
                     try {
                         MoodType mood = MoodType.valueOf(moodInput);
                         moodManager.logMood(mood);
-                        System.out.println("Mood logged.");
+                        System.out.println("Mood logged!");
                     } catch (IllegalArgumentException e) {
                         System.out.println(" Invalid mood. Try again.");
                     }
@@ -55,10 +63,11 @@ public class Driver {
 
                     System.out.println("Effort level (LOW / MEDIUM / HIGH):");
                     LevelMood level;
+
                     try {
                         level = LevelMood.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (Exception e) {
-                        System.out.println(" Invalid level. Task canceled.");
+                        System.out.println(" Invalid level. Task cancelled.");
                         break;
                     }
 
@@ -76,25 +85,28 @@ public class Driver {
                                 new PersonalTask(0, title, desc, level, LocalDate.now())
                         );
                     }
-                    System.out.println("Task added.");
+
+                    System.out.println("Task added successfully!");
                 }
 
                 case 3 -> {
                     System.out.println("Enter mood (TIRED/NEUTRAL/ENERGETIC):");
+                    String m = sc.nextLine().trim().toUpperCase();
+
                     try {
-                        MoodType mood = MoodType.valueOf(sc.nextLine().trim().toUpperCase());
+                        MoodType mood = MoodType.valueOf(m);
                         var suggestions = taskManager.suggestTasksByMood(mood);
 
-                        System.out.println("Suggested tasks:");
                         if (suggestions.isEmpty()) {
-                            System.out.println("No tasks match this mood yet.");
+                            System.out.println("No matching tasks yet.");
                         } else {
+                            System.out.println("Suggested tasks:");
                             for (Task t : suggestions) {
                                 System.out.println(t);
                             }
                         }
                     } catch (Exception e) {
-                        System.out.println(" Invalid mood.");
+                        System.out.println(" Invalid mood input.");
                     }
                 }
 
@@ -103,6 +115,7 @@ public class Driver {
                     if (all.isEmpty()) {
                         System.out.println("No tasks added yet.");
                     } else {
+                        System.out.println("All tasks:");
                         for (Task t : all) {
                             System.out.println(t);
                         }
@@ -112,8 +125,9 @@ public class Driver {
                 case 5 -> {
                     var logs = moodManager.getAllMoodLogs();
                     if (logs.isEmpty()) {
-                        System.out.println("No mood logs found.");
+                        System.out.println("No mood logs yet.");
                     } else {
+                        System.out.println("Mood History:");
                         for (MoodLog log : logs) {
                             System.out.println(log);
                         }
@@ -121,8 +135,26 @@ public class Driver {
                 }
 
                 case 6 -> {
+                    taskManager.saveTasksToFile("tasks.txt");
+                }
+
+                case 7 -> {
+                    taskManager.loadTasksFromFile("tasks.txt");
+                }
+
+                case 8 -> {
+                    System.out.println("Fetching motivational quote...");
+                    String quote = externalService.getMotivationalQuote();
+                    System.out.println("\n Quote: " + quote + "\n");
+                }
+
+                case 9 -> {
                     System.out.println("Goodbye!");
                     return;
                 }
 
-                default -> System.out.println("
+                default -> System.out.println(" Enter a number between 1–9.");
+            }
+        }
+    }
+}
