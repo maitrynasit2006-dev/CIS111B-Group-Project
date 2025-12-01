@@ -4,10 +4,10 @@
  */
 import java.time.LocalDate;
 
-public class PersonalTask extends Task {
+public class PersonalActivity extends Activity {
 
-    public PersonalTask(int id, String title, String description,
-                        LevelMood effortLevel, LocalDate dueDate) {
+    public PersonalActivity(int id, String title, String description,
+                            LevelMood effortLevel, LocalDate dueDate) {
         super(id, title, description, effortLevel, dueDate);
     }
 
@@ -18,6 +18,6 @@ public class PersonalTask extends Task {
 
     @Override
     public String toString() {
-        return super.toString() + " [Personal Task]";
+        return super.toString() + " [Personal]";
     }
 }
