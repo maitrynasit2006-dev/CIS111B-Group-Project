@@ -1,8 +1,3 @@
-/**
- * Main driver class of the Task–Mood Planner.
- * Provides menu-driven user interface and handles input.
- */
-
 import java.util.Scanner;
 import java.time.LocalDate;
 
@@ -11,149 +6,146 @@ public class Driver {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        TaskManager taskManager = new TaskManager();
+        ActivityManager activityManager = new ActivityManager();
         MoodManager moodManager = new MoodManager();
-        ExternalService externalService = new ExternalService(); // NEW
+        ExternalService externalService = new ExternalService();
 
-        while (true) {
+        boolean running = true;
 
-            System.out.println("\n=== Task–Mood Planner ===");
+        while (running) {
+
+            System.out.println("\n=== Activity–Mood Planner ===");
             System.out.println("1. Log Mood");
-            System.out.println("2. Add Task");
-            System.out.println("3. Show Suggested Tasks");
-            System.out.println("4. Show All Tasks");
+            System.out.println("2. Add Activity");
+            System.out.println("3. Show Suggested Activities");
+            System.out.println("4. Show All Activities");
             System.out.println("5. Show Mood History");
-            System.out.println("6. Save Tasks to File");
-            System.out.println("7. Load Tasks from File");
+            System.out.println("6. Save Activities to File");
+            System.out.println("7. Load Activities from File");
             System.out.println("8. Show Motivational Quote (API)");
-            System.out.println("9. Exit");
+            System.out.println("9. Export Activity to Google Calendar");
+            System.out.println("10. Exit");
             System.out.print("Choose option: ");
 
-            // Prevent crash if user enters letters
             if (!sc.hasNextInt()) {
-                System.out.println(" Invalid input. Enter a number 1–9.");
+                System.out.println("Invalid input.");
                 sc.nextLine();
                 continue;
             }
 
             int choice = sc.nextInt();
-            sc.nextLine(); // clear leftover newline
+            sc.nextLine();
 
             switch (choice) {
 
                 case 1 -> {
-                    System.out.println("Enter mood (TIRED / NEUTRAL / ENERGETIC):");
-                    String moodInput = sc.nextLine().trim().toUpperCase();
+                    System.out.print("Enter mood (TIRED / NEUTRAL / ENERGETIC): ");
+                    String input = sc.nextLine().trim().toUpperCase();
 
                     try {
-                        MoodType mood = MoodType.valueOf(moodInput);
+                        MoodType mood = MoodType.valueOf(input);
                         moodManager.logMood(mood);
-                        System.out.println("Mood logged!");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println(" Invalid mood. Try again.");
+                        System.out.println("Mood logged.");
+                    } catch (Exception e) {
+                        System.out.println("Invalid mood.");
                     }
                 }
 
                 case 2 -> {
-                    System.out.println("Task title:");
+                    System.out.print("Activity title: ");
                     String title = sc.nextLine();
 
-                    System.out.println("Description:");
+                    System.out.print("Description: ");
                     String desc = sc.nextLine();
 
-                    System.out.println("Effort level (LOW / MEDIUM / HIGH):");
+                    System.out.print("Effort (LOW / MEDIUM / HIGH): ");
                     LevelMood level;
 
                     try {
                         level = LevelMood.valueOf(sc.nextLine().trim().toUpperCase());
                     } catch (Exception e) {
-                        System.out.println(" Invalid level. Task cancelled.");
+                        System.out.println("Invalid effort level.");
                         break;
                     }
 
-                    System.out.println("Is this a School Task? (yes/no):");
-                    String isSchool = sc.nextLine().trim();
+                    System.out.print("School activity? (yes/no): ");
+                    String type = sc.nextLine().trim();
 
-                    if (isSchool.equalsIgnoreCase("yes")) {
-                        System.out.println("Course name:");
+                    if (type.equalsIgnoreCase("yes")) {
+                        System.out.print("Course name: ");
                         String course = sc.nextLine();
-                        taskManager.addTask(
-                                new SchoolTask(0, title, desc, level, LocalDate.now(), course)
+                        activityManager.addActivity(
+                                new SchoolActivity(0, title, desc, level, LocalDate.now(), course)
                         );
                     } else {
-                        taskManager.addTask(
-                                new PersonalTask(0, title, desc, level, LocalDate.now())
+                        activityManager.addActivity(
+                                new PersonalActivity(0, title, desc, level, LocalDate.now())
                         );
                     }
 
-                    System.out.println("Task added successfully!");
+                    System.out.println("Activity added.");
                 }
 
                 case 3 -> {
-                    System.out.println("Enter mood (TIRED/NEUTRAL/ENERGETIC):");
-                    String m = sc.nextLine().trim().toUpperCase();
+                    System.out.print("Enter mood (TIRED / NEUTRAL / ENERGETIC): ");
 
                     try {
-                        MoodType mood = MoodType.valueOf(m);
-                        var suggestions = taskManager.suggestTasksByMood(mood);
+                        MoodType mood = MoodType.valueOf(sc.nextLine().trim().toUpperCase());
+                        var list = activityManager.suggestActivitiesByMood(mood);
 
-                        if (suggestions.isEmpty()) {
-                            System.out.println("No matching tasks yet.");
+                        if (list.isEmpty()) {
+                            System.out.println("No matching activities.");
                         } else {
-                            System.out.println("Suggested tasks:");
-                            for (Task t : suggestions) {
-                                System.out.println(t);
-                            }
+                            list.forEach(System.out::println);
                         }
+
                     } catch (Exception e) {
-                        System.out.println(" Invalid mood input.");
+                        System.out.println("Invalid mood.");
                     }
                 }
 
                 case 4 -> {
-                    var all = taskManager.getAllTasks();
+                    var all = activityManager.getAllActivities();
+
                     if (all.isEmpty()) {
-                        System.out.println("No tasks added yet.");
+                        System.out.println("No activities available.");
                     } else {
-                        System.out.println("All tasks:");
-                        for (Task t : all) {
-                            System.out.println(t);
-                        }
+                        all.forEach(System.out::println);
                     }
                 }
 
                 case 5 -> {
                     var logs = moodManager.getAllMoodLogs();
+
                     if (logs.isEmpty()) {
-                        System.out.println("No mood logs yet.");
+                        System.out.println("No mood history.");
                     } else {
-                        System.out.println("Mood History:");
-                        for (MoodLog log : logs) {
-                            System.out.println(log);
-                        }
+                        logs.forEach(System.out::println);
                     }
                 }
 
-                case 6 -> {
-                    taskManager.saveTasksToFile("tasks.txt");
-                }
+                case 6 -> activityManager.saveActivitiesToFile("activities.txt");
 
-                case 7 -> {
-                    taskManager.loadTasksFromFile("tasks.txt");
-                }
+                case 7 -> activityManager.loadActivitiesFromFile("activities.txt");
 
                 case 8 -> {
-                    System.out.println("Fetching motivational quote...");
-                    String quote = externalService.getMotivationalQuote();
-                    System.out.println("\n Quote: " + quote + "\n");
+                    System.out.println("Motivational Quote:");
+                    System.out.println(externalService.getMotivationalQuote());
                 }
 
                 case 9 -> {
-                    System.out.println("Goodbye!");
-                    return;
+                    System.out.print("Enter activity ID to export: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+                    activityManager.exportActivityToGoogleCalendar(id);
                 }
 
-                default -> System.out.println(" Enter a number between 1–9.");
+                case 10 -> {
+                    System.out.println("Goodbye!");
+                    running = false;
+                }
+
+                default -> System.out.println("Choose between 1 and 10.");
             }
         }
     }
