@@ -4,21 +4,54 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Manages a collection of activities and provides operations to manipulate them.
+ * This includes adding, retrieving, suggesting, and persisting activities.
+ */
 public class ActivityManager {
 
+    /** List to store all activities */
     private ArrayList<Activity> activities = new ArrayList<>();
+    
+    /** Counter for generating unique activity IDs */
     private int nextId = 1;
 
+    /**
+     * Adds a new activity to the manager.
+     * Automatically assigns the next available ID to the activity.
+     *
+     * @param activity the activity to add (cannot be null)
+     * @throws IllegalArgumentException if activity is null
+     */
     public void addActivity(Activity activity) {
+        if (activity == null) {
+            throw new IllegalArgumentException("Activity cannot be null");
+        }
         activity.setId(nextId++);
         activities.add(activity);
     }
 
+    /**
+     * Returns a list of all activities in the manager.
+     *
+     * @return a new ArrayList containing all activities
+     */
     public ArrayList<Activity> getAllActivities() {
         return activities;
     }
 
+    /**
+     * Suggests activities based on the user's current mood.
+     * Maps mood to effort levels: TIRED → LOW, NEUTRAL → MEDIUM, ENERGETIC → HIGH.
+     *
+     * @param mood the user's current mood (TIRED, NEUTRAL, or ENERGETIC)
+     * @return a list of activities matching the suggested effort level
+     * @throws IllegalArgumentException if mood is null
+     */
     public ArrayList<Activity> suggestActivitiesByMood(MoodType mood) {
+        if (mood == null) {
+            throw new IllegalArgumentException("Mood cannot be null");
+        }
 
         LevelMood target = switch (mood) {
             case TIRED -> LevelMood.LOW;
@@ -37,6 +70,13 @@ public class ActivityManager {
         return result;
     }
 
+    /**
+     * Saves all activities to a text file in CSV format.
+     * Each line represents one activity with fields separated by commas.
+     * Format: id,title,description,effortLevel,type
+     *
+     * @param filename the name of the file to save to
+     */
     public void saveActivitiesToFile(String filename) {
         try (PrintWriter writer = new PrintWriter(filename)) {
 
@@ -55,6 +95,13 @@ public class ActivityManager {
         }
     }
 
+    /**
+     * Loads activities from a text file in CSV format.
+     * Expected format per line: id,title,description,effortLevel,type
+     * For school activities, the course name is not preserved in this implementation.
+     *
+     * @param filename the name of the file to load from
+     */
     public void loadActivitiesFromFile(String filename) {
         try (Scanner sc = new Scanner(new File(filename))) {
 
@@ -81,6 +128,12 @@ public class ActivityManager {
         }
     }
 
+    /**
+     * Exports a specific activity to an iCalendar (.ics) file that can be imported
+     * into Google Calendar or other calendar applications.
+     *
+     * @param activityId the ID of the activity to export
+     */
     public void exportActivityToGoogleCalendar(int activityId) {
 
         Activity selected = null;
