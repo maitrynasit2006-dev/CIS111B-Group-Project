@@ -1,9 +1,24 @@
 import java.util.Scanner;
 import java.time.LocalDate;
 
+/**
+ * The main driver class for the Activity-Mood Planner application.
+ * This class provides a command-line interface for users to interact with
+ * the application, including logging moods, managing activities, and viewing
+ * activity suggestions based on mood.
+ */
 public class Driver {
 
+    /**
+     * The main entry point for the Activity-Mood Planner application.
+     * Initializes the necessary components and displays the main menu for user interaction.
+     * 
+     * @param args Command-line arguments (not used)
+     */
+
     public static void main(String[] args) {
+        // Initialize scanner for user input
+        // Create instances of required managers and services
 
         Scanner sc = new Scanner(System.in);
         ActivityManager activityManager = new ActivityManager();
@@ -14,6 +29,10 @@ public class Driver {
 
         while (running) {
 
+            /**
+             * Display the main menu options to the user.
+             * The menu provides various options to interact with the Activity-Mood Planner.
+             */
             System.out.println("\n=== Activity–Mood Planner ===");
             System.out.println("1. Log Mood");
             System.out.println("2. Add Activity");
