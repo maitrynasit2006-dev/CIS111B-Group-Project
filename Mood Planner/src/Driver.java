@@ -157,7 +157,7 @@ public class Driver {
                         .append(idFormatted)
                         .append(", Title = ")
                         .append(a.getTitle())
-                        .append(", Tescription = ")
+                        .append(", Description = ")
                         .append(a.getDescription())
                         .append(", Effort = ")
                         .append(a.getEffortLevel())
