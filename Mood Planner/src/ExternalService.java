@@ -4,17 +4,36 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Handles calls to an external web API to retrieve motivational quotes.
- * Demonstrates use of Java networking classes and external services.
+ * Provides access to external web services, primarily for fetching motivational quotes.
+ * This class handles all external API communications and provides fallback mechanisms
+ * when external services are unavailable.
+ *
+ * <p>The current implementation uses the ZenQuotes API to fetch random motivational quotes
+ * and includes a local fallback mechanism. It demonstrates proper error handling and
+ * network request management in Java.</p>
+ *
+ * <p>This class is thread-safe and can be used across multiple threads.</p>
+ *
+ * @see MoodType
  */
 public class ExternalService {
 
     /**
-     * Calls the ZenQuotes API and returns a motivational quote.
-     * If anything goes wrong (no internet, bad response, etc.), a local
-     * fallback quote is returned instead.
+     * Fetches a random motivational quote from the ZenQuotes API.
+     * This method performs a synchronous HTTP GET request to the external API.
      *
-     * @return a quote in the format: "Quote text — Author"
+     * <p><b>Implementation Details:</b></p>
+     * <ul>
+     *   <li>Makes a request to "https://zenquotes.io/api/random"</li>
+     *   <li>Sets a connection timeout of 5 seconds</li>
+     *   <li>Parses the JSON response to extract quote and author</li>
+     *   <li>Returns a fallback quote if any error occurs</li>
+     * </ul>
+     *
+     * @return a formatted string containing the quote and author in the format:
+     *         "Quote text — Author"
+     * @throws RuntimeException if there's an error processing the API response
+     *         (note: most errors are caught and result in a fallback quote)
      */
     public String getMotivationalQuote() {
 
@@ -54,12 +73,24 @@ public class ExternalService {
     }
 
     /**
-     * Returns a motivational quote decorated for a specific mood.
-     * Still calls the external API, but wraps the quote with a short,
-     * mood-specific header.
+     * Retrieves a motivational quote tailored to the user's current mood.
+     * This method wraps the quote with a mood-appropriate header to provide
+     * more contextual motivation.
      *
-     * @param mood the user's current mood (can be null)
-     * @return a decorated quote string for that mood
+     * <p>If the provided mood is null, the base quote is returned without
+     * any additional decoration.</p>
+     *
+     * <p><b>Mood-specific decorations:</b></p>
+     * <ul>
+     *   <li><b>TIRED:</b> Adds "Gentle encouragement for when you're TIRED"</li>
+     *   <li><b>NEUTRAL:</b> Adds "A little boost for your NEUTRAL day"</li>
+     *   <li><b>ENERGETIC:</b> Adds "Fuel for your ENERGETIC mood"</li>
+     * </ul>
+     *
+     * @param mood the user's current mood, or null for no mood-specific decoration
+     * @return a formatted string containing a mood-appropriate header followed by the quote
+     * @see #getMotivationalQuote()
+     * @see MoodType
      */
     public String getMotivationalQuoteForMood(MoodType mood) {
         String baseQuote = getMotivationalQuote();
