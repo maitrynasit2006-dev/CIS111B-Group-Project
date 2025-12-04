@@ -12,7 +12,7 @@ public class ActivityManager {
 
     /** List to store all activities */
     private ArrayList<Activity> activities = new ArrayList<>();
-    
+
     /** Counter for generating unique activity IDs */
     private int nextId = 1;
 
@@ -21,7 +21,7 @@ public class ActivityManager {
      * Automatically assigns the next available ID to the activity.
      *
      * @param activity the activity to add (cannot be null)
-     * @throws IllegalArgumentException if activity is null
+     * @throws IllegalArgumentException if the activity is null
      */
     public void addActivity(Activity activity) {
         if (activity == null) {
@@ -37,14 +37,14 @@ public class ActivityManager {
      * @return a new ArrayList containing all activities
      */
     public ArrayList<Activity> getAllActivities() {
-        return activities;
+        return new ArrayList<>(activities);
     }
 
     /**
      * Suggests activities based on the user's current mood.
-     * Maps mood to effort levels: TIRED → LOW, NEUTRAL → MEDIUM, ENERGETIC → HIGH.
+     * Uses the recommended effort level defined in the MoodType enum.
      *
-     * @param mood the user's current mood (TIRED, NEUTRAL, or ENERGETIC)
+     * @param mood the user's current mood
      * @return a list of activities matching the suggested effort level
      * @throws IllegalArgumentException if mood is null
      */
@@ -53,11 +53,7 @@ public class ActivityManager {
             throw new IllegalArgumentException("Mood cannot be null");
         }
 
-        LevelMood target = switch (mood) {
-            case TIRED -> LevelMood.LOW;
-            case NEUTRAL -> LevelMood.MEDIUM;
-            default -> LevelMood.HIGH;
-        };
+        LevelMood target = mood.getRecommendedEffortLevel();
 
         ArrayList<Activity> result = new ArrayList<>();
 
@@ -76,8 +72,9 @@ public class ActivityManager {
      * Format: id,title,description,effortLevel,type
      *
      * @param filename the name of the file to save to
+     * @return true if the save succeeded, false otherwise
      */
-    public void saveActivitiesToFile(String filename) {
+    public boolean saveActivitiesToFile(String filename) {
         try (PrintWriter writer = new PrintWriter(filename)) {
 
             for (Activity a : activities) {
@@ -88,10 +85,9 @@ public class ActivityManager {
                         a.getTypeLabel());
             }
 
-            System.out.println("Activities saved.");
-
+            return true;
         } catch (Exception e) {
-            System.out.println("Error saving activities.");
+            return false;
         }
     }
 
@@ -101,12 +97,18 @@ public class ActivityManager {
      * For school activities, the course name is not preserved in this implementation.
      *
      * @param filename the name of the file to load from
+     * @return true if the load succeeded, false otherwise
      */
-    public void loadActivitiesFromFile(String filename) {
+    public boolean loadActivitiesFromFile(String filename) {
         try (Scanner sc = new Scanner(new File(filename))) {
 
             while (sc.hasNextLine()) {
                 String[] p = sc.nextLine().split(",");
+
+                if (p.length < 5) {
+                    // Skip malformed lines
+                    continue;
+                }
 
                 int id = Integer.parseInt(p[0]);
                 String title = p[1];
@@ -114,17 +116,25 @@ public class ActivityManager {
                 LevelMood level = LevelMood.valueOf(p[3]);
                 String type = p[4];
 
+                Activity activity;
+
                 if (type.equalsIgnoreCase("School")) {
-                    activities.add(new SchoolActivity(id, title, desc, level, LocalDate.now(), "Unknown"));
+                    activity = new SchoolActivity(id, title, desc, level, LocalDate.now(), "Unknown");
                 } else {
-                    activities.add(new PersonalActivity(id, title, desc, level, LocalDate.now()));
+                    activity = new PersonalActivity(id, title, desc, level, LocalDate.now());
+                }
+
+                activities.add(activity);
+
+                // Ensure nextId remains ahead of any loaded IDs
+                if (id >= nextId) {
+                    nextId = id + 1;
                 }
             }
 
-            System.out.println("Activities loaded.");
-
+            return true;
         } catch (Exception e) {
-            System.out.println("Error loading activities.");
+            return false;
         }
     }
 
@@ -133,8 +143,9 @@ public class ActivityManager {
      * into Google Calendar or other calendar applications.
      *
      * @param activityId the ID of the activity to export
+     * @return true if the export succeeded, false if activity is not found or an error occurs
      */
-    public void exportActivityToGoogleCalendar(int activityId) {
+    public boolean exportActivityToGoogleCalendar(int activityId) {
 
         Activity selected = null;
 
@@ -146,11 +157,12 @@ public class ActivityManager {
         }
 
         if (selected == null) {
-            System.out.println("Activity not found.");
-            return;
+            return false;
         }
 
-        try (PrintWriter pw = new PrintWriter("activity_" + selected.getId() + ".ics")) {
+        String fileName = "activity_" + selected.getId() + ".ics";
+
+        try (PrintWriter pw = new PrintWriter(fileName)) {
 
             pw.println("BEGIN:VCALENDAR");
             pw.println("VERSION:2.0");
@@ -163,10 +175,10 @@ public class ActivityManager {
             pw.println("END:VEVENT");
             pw.println("END:VCALENDAR");
 
-            System.out.println("Calendar export created.");
+            return true;
 
         } catch (Exception e) {
-            System.out.println("Error exporting calendar.");
+            return false;
         }
     }
 }
