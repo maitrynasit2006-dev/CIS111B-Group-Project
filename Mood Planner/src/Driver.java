@@ -1,12 +1,29 @@
 import javax.swing.*;
 import java.time.LocalDate;
 
+/**
+ * The main application class for the Mood Planner system.
+ * This class provides a text-based user interface for managing moods and activities.
+ * It coordinates between the {@link MoodManager}, {@link ActivityManager}, and {@link ExternalService}
+ * to provide a complete mood tracking and activity planning solution.
+ */
 public class Driver {
 
+    /** Manages all activity-related operations. */
     private static ActivityManager activityManager = new ActivityManager();
+    
+    /** Manages all mood logging and retrieval operations. */
     private static MoodManager moodManager = new MoodManager();
+    
+    /** Handles external service calls, such as fetching motivational quotes. */
     private static ExternalService externalService = new ExternalService();
 
+    /**
+     * The main entry point for the Mood Planner application.
+     * Displays a text-based menu and processes user input in a loop until the user chooses to exit.
+     * 
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
 
         while (true) {
@@ -47,6 +64,10 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays a dialog to log the user's current mood.
+     * Prompts the user to select from available mood types and records the selection.
+     */
     private static void logMoodGUI() {
         String mood = JOptionPane.showInputDialog("Enter mood (TIRED / NEUTRAL / ENERGETIC):");
 
@@ -59,6 +80,10 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays a dialog to add a new activity.
+     * Collects activity details including name, description, and effort level.
+     */
     private static void addActivityGUI() {
         String title = JOptionPane.showInputDialog("Activity title:");
         if (title == null || title.trim().isEmpty()) {
@@ -102,6 +127,10 @@ public class Driver {
         JOptionPane.showMessageDialog(null, "Activity added.");
     }
 
+    /**
+     * Displays suggested activities based on the user's current mood.
+     * If no mood has been logged, prompts the user to log a mood first.
+     */
     private static void suggestGUI() {
         String moodText = JOptionPane.showInputDialog("Enter mood (TIRED / NEUTRAL / ENERGETIC):");
         if (moodText == null) return;
@@ -145,6 +174,10 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays all activities in the system.
+     * Shows a list of all activities with their details in a dialog.
+     */
     private static void showAllGUI() {
         var all = activityManager.getAllActivities();
         if (all.isEmpty()) {
@@ -157,7 +190,7 @@ public class Driver {
                         .append(idFormatted)
                         .append(", Title = ")
                         .append(a.getTitle())
-                        .append(", Description = ")
+                        .append(", Tescription = ")
                         .append(a.getDescription())
                         .append(", Effort = ")
                         .append(a.getEffortLevel())
@@ -167,6 +200,10 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays the mood history.
+     * Shows a list of all logged moods with their timestamps.
+     */
     private static void showHistoryGUI() {
         var logs = moodManager.getAllMoodLogs();
         if (logs.isEmpty()) {
@@ -180,20 +217,36 @@ public class Driver {
         }
     }
 
+    /**
+     * Saves the current state of activities to a file.
+     * Prompts the user for a filename and handles any file I/O errors.
+     */
     private static void saveGUI() {
         boolean ok = activityManager.saveActivitiesToFile("activities.txt");
         JOptionPane.showMessageDialog(null, ok ? "Saved!" : "Error saving.");
     }
 
+    /**
+     * Loads activities from a file.
+     * Prompts the user for a filename and handles any file I/O errors.
+     */
     private static void loadGUI() {
         boolean ok = activityManager.loadActivitiesFromFile("activities.txt");
         JOptionPane.showMessageDialog(null, ok ? "Loaded!" : "Error loading.");
     }
 
+    /**
+     * Fetches and displays a motivational quote using the external service.
+     * Handles any potential network or service errors gracefully.
+     */
     private static void quoteGUI() {
         JOptionPane.showMessageDialog(null, externalService.getMotivationalQuote());
     }
 
+    /**
+     * Exports activities to Google Calendar.
+     * This is a placeholder for future implementation.
+     */
     private static void exportGUI() {
         String idText = JOptionPane.showInputDialog("Enter activity ID:");
 
