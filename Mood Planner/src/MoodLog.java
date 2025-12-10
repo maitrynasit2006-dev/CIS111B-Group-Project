@@ -1,36 +1,24 @@
 /**
- * Represents a single mood logging event in the Mood Planner system.
- * Each instance captures a user's mood at a specific point in time and is used by
- * {@link MoodManager} to maintain a history of the user's mood patterns.
+ * Represents a single mood log entry with a timestamp.
+ * This class is used by {@link MoodManager} to track and manage historical mood entries.
+ * Each mood log contains a unique ID, a mood type, and a timestamp of when the mood was logged.
  *
- * <p>This class is immutable and thread-safe, making it suitable for use in
- * concurrent environments.</p>
+ * <p>This class is immutable and thread-safe.</p>
  *
- * @see MoodType
  * @see MoodManager
+ * @see MoodType
  */
 import java.time.LocalDateTime;
 
 public class MoodLog {
 
-    /**
-     * The unique identifier for this mood log entry.
-     * Used for reference and retrieval purposes.
-     */
+    /** Unique identifier for this mood log entry. */
     private final int id;
-    
-    /**
-     * The type of mood that was logged.
-     * Cannot be null and is set during construction.
-     *
-     * @see MoodType
-     */
+
+    /** The type of mood that was logged. */
     private final MoodType moodType;
-    
-    /**
-     * The exact date and time when the mood was logged.
-     * Automatically set to the current date/time when the log is created.
-     */
+
+    /** The date and time when the mood was logged. */
     private final LocalDateTime timestamp;
 
     /**
@@ -38,6 +26,7 @@ public class MoodLog {
      *
      * @param id       unique identifier for this log
      * @param moodType the mood that was logged (cannot be null)
+     * @throws IllegalArgumentException if moodType is null
      */
     public MoodLog(int id, MoodType moodType) {
         if (moodType == null) {
@@ -51,7 +40,7 @@ public class MoodLog {
     /**
      * Returns the unique identifier of this mood log entry.
      *
-     * @return the log entry's ID
+     * @return the mood log ID
      */
     public int getId() {
         return id;
@@ -60,7 +49,7 @@ public class MoodLog {
     /**
      * Returns the type of mood that was logged.
      *
-     * @return the mood type (never null)
+     * @return the mood type
      * @see MoodType
      */
     public MoodType getMoodType() {
@@ -70,7 +59,7 @@ public class MoodLog {
     /**
      * Returns the date and time when this mood was logged.
      *
-     * @return the timestamp of when the mood was recorded
+     * @return the timestamp of the mood log entry
      */
     public LocalDateTime getTimestamp() {
         return timestamp;
@@ -80,7 +69,7 @@ public class MoodLog {
      * Returns a string representation of this mood log entry.
      * The string includes the ID, mood type, and timestamp.
      *
-     * @return a string representation of this mood log
+     * @return a string representation of the mood log
      */
     @Override
     public String toString() {
