@@ -9,19 +9,19 @@ public abstract class Activity {
 
     /** Unique identifier for the activity */
     private int id;
-    
+
     /** Title of the activity */
     private String title;
-    
+
     /** Detailed description of the activity */
     private String description;
-    
+
     /** Effort level required for the activity (LOW, MEDIUM, HIGH) */
     private LevelMood effortLevel;
-    
+
     /** Due date for the activity */
     private LocalDate dueDate;
-    
+
     /** Completion status of the activity */
     private boolean isCompleted;
 
@@ -36,7 +36,7 @@ public abstract class Activity {
      * @throws IllegalArgumentException if title is null or empty
      */
     protected Activity(int id, String title, String description,
-                     LevelMood effortLevel, LocalDate dueDate) {
+                       LevelMood effortLevel, LocalDate dueDate) {
 
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty.");
