@@ -11,17 +11,17 @@ public class Driver {
 
     /** Manages all activity-related operations. */
     private static ActivityManager activityManager = new ActivityManager();
-    
+
     /** Manages all mood logging and retrieval operations. */
     private static MoodManager moodManager = new MoodManager();
-    
+
     /** Handles external service calls, such as fetching motivational quotes. */
     private static ExternalService externalService = new ExternalService();
 
     /**
      * The main entry point for the Mood Planner application.
      * Displays a text-based menu and processes user input in a loop until the user chooses to exit.
-     * 
+     *
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
@@ -38,8 +38,7 @@ public class Driver {
                     6. Save Activities
                     7. Load Activities
                     8. Motivational Quote (API)
-                    9. Export Activity to Google Calendar
-                    10. Exit
+                    9. Exit
                     
                     Enter option:
                     """);
@@ -57,8 +56,7 @@ public class Driver {
                 case "6" -> saveGUI();
                 case "7" -> loadGUI();
                 case "8" -> quoteGUI();
-                case "9" -> exportGUI();
-                case "10" -> { return; }
+                case "9" -> { return; }
                 default -> JOptionPane.showMessageDialog(null, "Invalid option.");
             }
         }
@@ -106,6 +104,16 @@ public class Driver {
             JOptionPane.showMessageDialog(null, "Invalid effort level.");
             return;
         }
+        String dueDateStr = JOptionPane.showInputDialog("Enter due date (YYYY-MM-DD):");
+        LocalDate dueDate;
+
+        try {
+            dueDate = LocalDate.parse(dueDateStr.trim());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid date. Using today's date.");
+            dueDate = LocalDate.now();
+        }
+
 
         String type = JOptionPane.showInputDialog("Activity type (SCHOOL or PERSONAL):");
         if (type == null) return;
@@ -116,11 +124,12 @@ public class Driver {
                 course = "Unknown";
             }
             activityManager.addActivity(
-                    new SchoolActivity(0, title, desc, level, LocalDate.now(), course)
+                    new SchoolActivity(0, title, desc, level, dueDate, course)
             );
         } else {
             activityManager.addActivity(
-                    new PersonalActivity(0, title, desc, level, LocalDate.now())
+                    new PersonalActivity(0, title, desc, level, dueDate)
+
             );
         }
 
@@ -158,6 +167,8 @@ public class Driver {
                             .append(a.getDescription())
                             .append(", Effort = ")
                             .append(a.getEffortLevel())
+                            .append(", Due Date = ")
+                            .append(a.getDueDate())
                             .append("\n");
                 }
 
@@ -190,10 +201,12 @@ public class Driver {
                         .append(idFormatted)
                         .append(", Title = ")
                         .append(a.getTitle())
-                        .append(", Tescription = ")
+                        .append(", Description = ")
                         .append(a.getDescription())
                         .append(", Effort = ")
                         .append(a.getEffortLevel())
+                        .append(", Due Date = ")
+                        .append(a.getDueDate())
                         .append("\n");
             }
             JOptionPane.showMessageDialog(null, sb.toString());
@@ -236,28 +249,13 @@ public class Driver {
     }
 
     /**
-     * Fetches and displays a motivational quote using the external service.
-     * Handles any potential network or service errors gracefully.
+     * Fetches and displays a random motivational quote using the external service.
+     * The quote is retrieved from an external API and displayed in a dialog box.
+     * Handles any potential network or service errors by showing a friendly message.
+     * 
+     * @see ExternalService#getMotivationalQuote()
      */
     private static void quoteGUI() {
         JOptionPane.showMessageDialog(null, externalService.getMotivationalQuote());
-    }
-
-    /**
-     * Exports activities to Google Calendar.
-     * This is a placeholder for future implementation.
-     */
-    private static void exportGUI() {
-        String idText = JOptionPane.showInputDialog("Enter activity ID:");
-
-        if (idText == null) return;
-
-        try {
-            int id = Integer.parseInt(idText.trim());
-            boolean ok = activityManager.exportActivityToGoogleCalendar(id);
-            JOptionPane.showMessageDialog(null, ok ? "Exported." : "Activity not found or error.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid ID.");
-        }
     }
 }
